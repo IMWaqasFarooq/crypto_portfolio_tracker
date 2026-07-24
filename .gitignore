@@ -44,15 +44,17 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Environment secrets - never commit real API keys or Firebase config
+# Environment secrets - CoinGecko keys etc, never commit real values
 assets/env/.env.development
 assets/env/.env.production
-android/app/google-services.json
-ios/Runner/GoogleService-Info.plist
-lib/firebase_options.dart
 *.jks
 *.keystore
 key.properties
+
+# Firebase client config (apiKey/appId here identify the project but grant
+# no access without security rules - Google's own guidance is these are
+# safe to check in: https://firebase.google.com/docs/projects/api-keys).
+# Committed intentionally so a fresh clone compiles and runs immediately.
 
 # Generated code
 **/*.g.dart

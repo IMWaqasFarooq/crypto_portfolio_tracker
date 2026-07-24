@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "937719898122",
+    "project_id": "cryptofolio-portfolio",
+    "storage_bucket": "cryptofolio-portfolio.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:937719898122:android:0746e6979685ca7b973ff3",
+        "android_client_info": {
+          "package_name": "com.wsx.cryptofolio.crypto_portfolio_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7WXHi_grxn1Wl3CkvKTUCbPlTKYkepRA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
