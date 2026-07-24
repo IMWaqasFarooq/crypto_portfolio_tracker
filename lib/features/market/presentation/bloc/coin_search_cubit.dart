@@ -14,6 +14,12 @@ class CoinSearchCubit extends Cubit<CoinSearchState> {
   Timer? _debounce;
 
   void queryChanged(String query) {
+    // buildSuggestions() calls this on every SearchDelegate rebuild, not just
+    // when the text actually changes - without this guard, frequent rebuilds
+    // (e.g. one per pump/frame) keep restarting the debounce timer and a
+    // search is never actually dispatched.
+    if (query == state.query) return;
+
     _debounce?.cancel();
     emit(state.copyWith(query: query));
 

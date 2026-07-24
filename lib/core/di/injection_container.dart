@@ -20,6 +20,8 @@ import '../storage/token_storage.dart';
 
 import '../../features/authentication/auth_injection.dart';
 import '../../features/market/market_injection.dart';
+import '../../features/portfolio/portfolio_injection.dart';
+import '../../features/watchlist/watchlist_injection.dart';
 
 /// Root service locator; each feature registers into this same container.
 final sl = GetIt.instance;
@@ -29,6 +31,8 @@ Future<void> configureDependencies(Flavor flavor) async {
   await _registerCore(flavor);
   registerAuthFeature(sl);
   await registerMarketFeature(sl);
+  await registerWatchlistFeature(sl);
+  await registerPortfolioFeature(sl);
 }
 
 /// Falls back to no-op services when Firebase isn't configured yet.

@@ -1,8 +1,6 @@
 import '../../domain/entities/coin_detail.dart';
 
-/// Hand-written rather than freezed+json_serializable: CoinGecko's `/coins/{id}`
-/// payload nests everything we need under `market_data`/`description`/`links`,
-/// which codegen can't flatten without a bespoke converter per field anyway.
+/// Hand-parsed since CoinGecko nests fields under market_data/description/links.
 class CoinDetailModel {
   const CoinDetailModel({
     required this.id,

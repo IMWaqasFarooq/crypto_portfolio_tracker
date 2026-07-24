@@ -3,8 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../entities/price_tick.dart';
 import '../repositories/market_repository.dart';
 
-/// Subscribes [subscriberId] to live ticks for [symbols] and returns the
-/// shared tick stream; callers filter to the symbols they care about.
+/// Subscribes [subscriberId] to live ticks for [symbols] and returns the shared tick stream.
 class WatchPriceUpdatesUseCase {
   WatchPriceUpdatesUseCase(this._repository);
 

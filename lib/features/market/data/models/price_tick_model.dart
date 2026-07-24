@@ -1,7 +1,6 @@
 import '../../domain/entities/price_tick.dart';
 
-/// Parsed from a Binance 24hr ticker payload (`s`/`c`/`P` fields), not a
-/// generic JSON shape, so this is hand-written rather than codegen'd.
+/// Hand-parsed from a Binance 24hr ticker payload (`s`/`c`/`P` fields).
 class PriceTickModel {
   const PriceTickModel({required this.symbol, required this.price, required this.changePercent24h});
 

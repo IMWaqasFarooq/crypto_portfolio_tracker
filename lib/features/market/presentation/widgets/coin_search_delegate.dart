@@ -7,9 +7,7 @@ import '../../../../core/widgets/error_state_view.dart';
 import '../bloc/coin_search_cubit.dart';
 import '../bloc/coin_search_state.dart';
 
-/// Wraps [CoinSearchCubit] behind Flutter's built-in [SearchDelegate] so
-/// search gets a native full-screen search UI (keyboard focus, back/clear
-/// affordances) for free.
+/// Wraps [CoinSearchCubit] behind Flutter's built-in [SearchDelegate].
 class CoinSearchDelegate extends SearchDelegate<String?> {
   CoinSearchDelegate(this._cubit);
 

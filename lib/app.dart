@@ -5,6 +5,8 @@ import 'core/di/injection_container.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'features/authentication/presentation/bloc/auth_bloc.dart';
+import 'features/portfolio/presentation/cubit/portfolio_cubit.dart';
+import 'features/watchlist/presentation/cubit/watchlist_cubit.dart';
 
 /// Root widget. Theme mode will read from Settings once that feature lands.
 class CryptofolioApp extends StatelessWidget {
@@ -13,8 +15,12 @@ class CryptofolioApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authBloc = sl<AuthBloc>();
-    return BlocProvider.value(
-      value: authBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: authBloc),
+        BlocProvider.value(value: sl<WatchlistCubit>()),
+        BlocProvider.value(value: sl<PortfolioCubit>()),
+      ],
       child: MaterialApp.router(
         title: 'Cryptofolio',
         debugShowCheckedModeBanner: false,

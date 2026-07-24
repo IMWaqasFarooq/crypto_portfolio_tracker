@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// The bottom-nav shell hosting the four top-level tabs. Each branch keeps
-/// its own navigation stack via [StatefulShellRoute.indexedStack], so
-/// switching tabs preserves scroll position/state instead of rebuilding.
+/// The bottom-nav shell; each branch keeps its own state via StatefulShellRoute.indexedStack.
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.navigationShell});
 

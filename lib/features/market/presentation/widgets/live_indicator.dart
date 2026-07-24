@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 
-/// A small pulsing dot + "Live" label shown once a WebSocket price tick has
-/// actually arrived for this coin - not shown optimistically, so it never
-/// claims to be live when it isn't.
+/// Pulsing dot + "Live" label, shown only once a real tick has arrived for this coin.
 class LiveIndicator extends StatefulWidget {
   const LiveIndicator({super.key});
 

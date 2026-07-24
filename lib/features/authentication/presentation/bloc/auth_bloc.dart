@@ -8,8 +8,7 @@ import '../../domain/usecases/logout_usecase.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
-/// App-wide session state; registered as a singleton so the router,
-/// splash screen, and login screen all observe the same instance.
+/// App-wide session state, registered as a singleton.
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc({
     required LoginUseCase loginUseCase,

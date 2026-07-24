@@ -14,9 +14,7 @@ abstract class MarketLocalDataSource {
   Future<List<CandleModel>?> getCachedCandles(String coinId, int days);
 }
 
-/// Caches raw JSON (not typed Hive adapters) in the market box - avoids
-/// hand-maintaining TypeAdapters for models that already round-trip through
-/// json_serializable, at the cost of a decode step on cache reads.
+/// Caches raw JSON in the market box rather than typed Hive adapters.
 class MarketLocalDataSourceImpl implements MarketLocalDataSource {
   MarketLocalDataSourceImpl(this._box);
 

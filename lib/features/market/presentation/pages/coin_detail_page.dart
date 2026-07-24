@@ -8,6 +8,9 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/coin_avatar.dart';
 import '../../../../core/widgets/error_state_view.dart';
 import '../../../../core/widgets/price_change_badge.dart';
+import '../../../watchlist/domain/entities/watchlist_item.dart';
+import '../../../watchlist/presentation/cubit/watchlist_cubit.dart';
+import '../../../watchlist/presentation/cubit/watchlist_state.dart';
 import '../bloc/coin_detail_bloc.dart';
 import '../bloc/coin_detail_event.dart';
 import '../bloc/coin_detail_state.dart';
@@ -38,7 +41,35 @@ class _CoinDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Coin details')),
+      appBar: AppBar(
+        title: const Text('Coin details'),
+        actions: [
+          BlocBuilder<CoinDetailBloc, CoinDetailState>(
+            builder: (context, detailState) {
+              final coin = detailState.coin;
+              if (coin == null) return const SizedBox.shrink();
+              return BlocBuilder<WatchlistCubit, WatchlistState>(
+                builder: (context, watchlistState) {
+                  final isWatched = watchlistState.isWatched(coin.id);
+                  return IconButton(
+                    icon: Icon(isWatched ? Icons.star_rounded : Icons.star_border_rounded),
+                    tooltip: isWatched ? 'Remove from watchlist' : 'Add to watchlist',
+                    onPressed: () => context.read<WatchlistCubit>().toggle(
+                          WatchlistItem(
+                            coinId: coin.id,
+                            symbol: coin.symbol,
+                            name: coin.name,
+                            imageUrl: coin.imageUrl,
+                            addedAt: DateTime.now(),
+                          ),
+                        ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: BlocBuilder<CoinDetailBloc, CoinDetailState>(
         builder: (context, state) {
           if (state.detailStatus == DetailStatus.initial || state.detailStatus == DetailStatus.loading) {

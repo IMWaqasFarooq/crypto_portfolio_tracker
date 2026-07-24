@@ -1,7 +1,6 @@
 import '../../domain/entities/candle.dart';
 
-/// CoinGecko's `/coins/{id}/ohlc` returns `[timestampMs, open, high, low,
-/// close]` tuples rather than objects.
+/// CoinGecko's `/coins/{id}/ohlc` returns `[timestampMs, open, high, low, close]` tuples.
 class CandleModel {
   const CandleModel({
     required this.timestampMs,

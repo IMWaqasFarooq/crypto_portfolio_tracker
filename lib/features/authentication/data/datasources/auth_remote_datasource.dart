@@ -5,10 +5,7 @@ abstract class AuthRemoteDataSource {
   Future<UserModel> login({required String email, required String password});
 }
 
-/// Simulates a real backend call (latency + deterministic failure paths) so
-/// the rest of the app can be built against a realistic auth contract
-/// without a live server. Swap for an HTTP-backed implementation later
-/// without touching the repository or any use case.
+/// Simulates a real backend call (latency + deterministic failure paths).
 class MockAuthRemoteDataSource implements AuthRemoteDataSource {
   @override
   Future<UserModel> login({required String email, required String password}) async {

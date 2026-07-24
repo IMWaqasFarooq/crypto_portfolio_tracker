@@ -1,7 +1,6 @@
 import '../../domain/entities/price_point.dart';
 
-/// CoinGecko returns `prices` as `[[timestampMs, price], ...]` pairs rather
-/// than objects, so this is parsed from a raw list entry, not a JSON map.
+/// CoinGecko returns `prices` as `[[timestampMs, price], ...]` pairs, not objects.
 class PricePointModel {
   const PricePointModel({required this.timestampMs, required this.price});
 

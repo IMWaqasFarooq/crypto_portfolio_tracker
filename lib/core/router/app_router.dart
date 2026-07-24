@@ -9,7 +9,9 @@ import '../../features/authentication/presentation/pages/login_page.dart';
 import '../../features/authentication/presentation/pages/splash_page.dart';
 import '../../features/market/presentation/pages/coin_detail_page.dart';
 import '../../features/market/presentation/pages/market_page.dart';
-import '../widgets/coming_soon_page.dart';
+import '../../features/portfolio/presentation/pages/add_holding_page.dart';
+import '../../features/portfolio/presentation/pages/portfolio_page.dart';
+import '../../features/watchlist/presentation/pages/watchlist_page.dart';
 import 'app_shell.dart';
 import 'go_router_refresh_stream.dart';
 import 'route_paths.dart';
@@ -36,6 +38,11 @@ abstract final class AppRouter {
           name: RouteNames.coinDetail,
           builder: (context, state) => CoinDetailPage(coinId: state.pathParameters['coinId']!),
         ),
+        GoRoute(
+          path: RoutePaths.addHolding,
+          name: RouteNames.addHolding,
+          builder: (context, state) => const AddHoldingPage(),
+        ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, shell) => AppShell(navigationShell: shell),
           branches: [
@@ -50,16 +57,14 @@ abstract final class AppRouter {
               GoRoute(
                 path: RoutePaths.portfolio,
                 name: RouteNames.portfolio,
-                builder: (context, state) =>
-                    const ComingSoonPage(title: 'Portfolio', icon: Icons.pie_chart_rounded),
+                builder: (context, state) => const PortfolioPage(),
               ),
             ]),
             StatefulShellBranch(routes: [
               GoRoute(
                 path: RoutePaths.watchlist,
                 name: RouteNames.watchlist,
-                builder: (context, state) =>
-                    const ComingSoonPage(title: 'Watchlist', icon: Icons.star_border_rounded),
+                builder: (context, state) => const WatchlistPage(),
               ),
             ]),
             StatefulShellBranch(routes: [

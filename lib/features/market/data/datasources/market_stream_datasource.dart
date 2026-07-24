@@ -12,13 +12,7 @@ abstract class MarketStreamDataSource {
   void dispose();
 }
 
-/// Streams live prices from Binance's public ticker WebSocket.
-///
-/// Multiple screens (the market list, a coin detail page) can be live at
-/// once, each wanting a different symbol set, over one shared connection.
-/// [subscribe] and [unsubscribe] register per-caller symbol sets; the
-/// actual socket always carries the union of everyone's symbols, and only
-/// reconnects when that union actually changes.
+/// Streams live prices from Binance's public ticker WebSocket over one shared connection carrying the union of every subscriber's symbols.
 class BinanceMarketStreamDataSource implements MarketStreamDataSource {
   final _controller = StreamController<PriceTickModel>.broadcast();
   final Map<String, List<String>> _subscriptions = {};
@@ -83,7 +77,7 @@ class BinanceMarketStreamDataSource implements MarketStreamDataSource {
       if (data == null) return;
       _controller.add(PriceTickModel.fromBinanceTicker(data));
     } catch (_) {
-      // Malformed/unexpected frame - drop it, the next tick will arrive shortly.
+      // Malformed frame, drop it.
     }
   }
 

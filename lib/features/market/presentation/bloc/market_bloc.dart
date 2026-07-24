@@ -12,8 +12,7 @@ import 'market_state.dart';
 
 const _perPage = 25;
 
-/// Caps how many symbols the list subscribes to live updates for, so
-/// pagination can't grow the Binance combined-stream URL without bound.
+/// Caps live-subscribed symbols so pagination can't grow the stream URL unbounded.
 const _maxLiveSymbols = 30;
 
 class MarketBloc extends Bloc<MarketEvent, MarketState> {
