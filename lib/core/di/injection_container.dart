@@ -18,12 +18,15 @@ import '../services/firebase_analytics_service.dart';
 import '../services/firebase_crash_reporting_service.dart';
 import '../storage/token_storage.dart';
 
+import '../../features/authentication/auth_injection.dart';
+
 /// Root service locator; each feature registers into this same container.
 final sl = GetIt.instance;
 
 /// Boots the DI graph for the given [flavor]. Must be awaited before `runApp`.
 Future<void> configureDependencies(Flavor flavor) async {
   await _registerCore(flavor);
+  registerAuthFeature(sl);
 }
 
 /// Falls back to no-op services when Firebase isn't configured yet.
