@@ -60,6 +60,8 @@ dependencies:
   firebase_messaging: ^16.4.3
   flutter_local_notifications: ^22.1.0
   flutter_dotenv: ^6.0.1
+  web_socket_channel: ^3.0.3
+  candlesticks: ^3.0.1
 
 dev_dependencies:
   flutter_test:

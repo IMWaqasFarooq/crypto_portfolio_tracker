@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/coin_avatar.dart';
@@ -8,10 +9,11 @@ import '../../../../core/widgets/price_change_badge.dart';
 import '../../domain/entities/coin.dart';
 
 class CoinListTile extends StatelessWidget {
-  const CoinListTile({super.key, required this.coin, required this.onTap});
+  const CoinListTile({super.key, required this.coin, required this.onTap, this.isLive = false});
 
   final Coin coin;
   final VoidCallback onTap;
+  final bool isLive;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,19 @@ class CoinListTile extends StatelessWidget {
       onTap: onTap,
       leading: CoinAvatar(imageUrl: coin.imageUrl, symbol: coin.symbol),
       title: Text(coin.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Text(coin.symbol.toUpperCase(), style: AppTextStyles.caption(context)),
+      subtitle: Row(
+        children: [
+          Text(coin.symbol.toUpperCase(), style: AppTextStyles.caption(context)),
+          if (isLive) ...[
+            const SizedBox(width: AppSpacing.xxs),
+            Container(
+              width: 6,
+              height: 6,
+              decoration: const BoxDecoration(color: AppColors.bullish, shape: BoxShape.circle),
+            ),
+          ],
+        ],
+      ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,

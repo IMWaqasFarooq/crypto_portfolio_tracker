@@ -11,6 +11,9 @@ import '../../../../core/widgets/price_change_badge.dart';
 import '../bloc/coin_detail_bloc.dart';
 import '../bloc/coin_detail_event.dart';
 import '../bloc/coin_detail_state.dart';
+import '../widgets/candlestick_chart.dart';
+import '../widgets/chart_type_toggle.dart';
+import '../widgets/live_indicator.dart';
 import '../widgets/market_stats_grid.dart';
 import '../widgets/price_chart.dart';
 import '../widgets/timeframe_selector.dart';
@@ -77,7 +80,15 @@ class _CoinDetailView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: AppSpacing.md),
-                Text(price.format(coin.currentPrice), style: AppTextStyles.priceLarge(context)),
+                Row(
+                  children: [
+                    Text(price.format(coin.currentPrice), style: AppTextStyles.priceLarge(context)),
+                    if (state.isLive) ...[
+                      const SizedBox(width: AppSpacing.sm),
+                      const LiveIndicator(),
+                    ],
+                  ],
+                ),
                 const SizedBox(height: AppSpacing.xxs),
                 PriceChangeBadge(changePercent: coin.priceChangePercentage24h),
                 const SizedBox(height: AppSpacing.lg),
@@ -85,8 +96,16 @@ class _CoinDetailView extends StatelessWidget {
                   const SizedBox(height: 220, child: Center(child: CircularProgressIndicator()))
                 else if (state.chartStatus == ChartStatus.failure)
                   ErrorStateView(failure: state.chartFailure!)
+                else if (state.chartType == ChartType.candles)
+                  CandlestickChart(candles: state.candles)
                 else
                   PriceChart(points: state.pricePoints),
+                const SizedBox(height: AppSpacing.sm),
+                ChartTypeToggle(
+                  selected: state.chartType,
+                  onChanged: (type) =>
+                      context.read<CoinDetailBloc>().add(CoinDetailEvent.chartTypeChanged(type)),
+                ),
                 const SizedBox(height: AppSpacing.sm),
                 TimeframeSelector(
                   selectedDays: state.selectedDays,

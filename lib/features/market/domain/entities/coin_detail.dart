@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import 'price_tick.dart';
+
 class CoinDetail extends Equatable {
   const CoinDetail({
     required this.id,
@@ -40,6 +42,28 @@ class CoinDetail extends Equatable {
   final double? circulatingSupply;
   final double? totalSupply;
   final double? maxSupply;
+
+  /// Applies a live [PriceTick] on top of the last REST-fetched snapshot.
+  CoinDetail withLiveTick(PriceTick tick) => CoinDetail(
+        id: id,
+        symbol: symbol,
+        name: name,
+        imageUrl: imageUrl,
+        description: description,
+        homepageUrl: homepageUrl,
+        currentPrice: tick.price,
+        marketCap: marketCap,
+        marketCapRank: marketCapRank,
+        priceChangePercentage24h: tick.changePercent24h,
+        totalVolume: totalVolume,
+        high24h: high24h,
+        low24h: low24h,
+        ath: ath,
+        atl: atl,
+        circulatingSupply: circulatingSupply,
+        totalSupply: totalSupply,
+        maxSupply: maxSupply,
+      );
 
   @override
   List<Object?> get props => [

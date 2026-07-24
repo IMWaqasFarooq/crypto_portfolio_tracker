@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../../../core/error/exceptions.dart';
+import '../models/candle_model.dart';
 import '../models/coin_detail_model.dart';
 import '../models/coin_model.dart';
 import '../models/coin_search_result_model.dart';
@@ -11,6 +12,7 @@ abstract class MarketRemoteDataSource {
   Future<List<CoinSearchResultModel>> searchCoins(String query);
   Future<CoinDetailModel> getCoinDetail(String coinId);
   Future<List<PricePointModel>> getPriceHistory(String coinId, {required int days});
+  Future<List<CandleModel>> getCandles(String coinId, {required int days});
 }
 
 class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
@@ -59,6 +61,16 @@ class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
     });
     final prices = (response.data as Map<String, dynamic>)['prices'] as List<dynamic>;
     return prices.map((e) => PricePointModel.fromPair(e as List<dynamic>)).toList();
+  }
+
+  @override
+  Future<List<CandleModel>> getCandles(String coinId, {required int days}) async {
+    final response = await _get('/coins/$coinId/ohlc', queryParameters: {
+      'vs_currency': 'usd',
+      'days': days,
+    });
+    final tuples = response.data as List<dynamic>;
+    return tuples.map((e) => CandleModel.fromTuple(e as List<dynamic>)).toList();
   }
 
   Future<Response<dynamic>> _get(String path, {Map<String, dynamic>? queryParameters}) async {

@@ -111,6 +111,7 @@ class _MarketViewState extends State<_MarketView> {
                 final coin = state.coins[index];
                 return CoinListTile(
                   coin: coin,
+                  isLive: state.liveSymbols.contains(coin.symbol.toLowerCase()),
                   onTap: () => context.push(RoutePaths.coinDetailPath(coin.id)),
                 );
               },

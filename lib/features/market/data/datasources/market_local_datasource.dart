@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 
 import '../../../../core/error/exceptions.dart';
+import '../models/candle_model.dart';
 import '../models/coin_model.dart';
 import '../models/price_point_model.dart';
 
@@ -9,6 +10,8 @@ abstract class MarketLocalDataSource {
   Future<List<CoinModel>?> getCachedCoins(int page);
   Future<void> cachePriceHistory(String coinId, int days, List<PricePointModel> points);
   Future<List<PricePointModel>?> getCachedPriceHistory(String coinId, int days);
+  Future<void> cacheCandles(String coinId, int days, List<CandleModel> candles);
+  Future<List<CandleModel>?> getCachedCandles(String coinId, int days);
 }
 
 /// Caches raw JSON (not typed Hive adapters) in the market box - avoids
@@ -46,6 +49,21 @@ class MarketLocalDataSourceImpl implements MarketLocalDataSource {
     return raw
         .cast<Map<dynamic, dynamic>>()
         .map((m) => PricePointModel.fromJson(Map<String, dynamic>.from(m)))
+        .toList();
+  }
+
+  @override
+  Future<void> cacheCandles(String coinId, int days, List<CandleModel> candles) async {
+    await _write('candles_${coinId}_$days', candles.map((c) => c.toJson()).toList());
+  }
+
+  @override
+  Future<List<CandleModel>?> getCachedCandles(String coinId, int days) async {
+    final raw = _read('candles_${coinId}_$days');
+    if (raw == null) return null;
+    return raw
+        .cast<Map<dynamic, dynamic>>()
+        .map((m) => CandleModel.fromJson(Map<String, dynamic>.from(m)))
         .toList();
   }
 

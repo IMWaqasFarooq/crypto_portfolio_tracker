@@ -16,5 +16,6 @@ abstract class MarketState with _$MarketState {
     @Default(true) bool hasMore,
     @Default(false) bool isLoadingMore,
     Failure? failure,
+    @Default(<String>{}) Set<String> liveSymbols,
   }) = _MarketState;
 }
