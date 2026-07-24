@@ -7,6 +7,10 @@ import '../../features/authentication/presentation/bloc/auth_event.dart';
 import '../../features/authentication/presentation/bloc/auth_state.dart';
 import '../../features/authentication/presentation/pages/login_page.dart';
 import '../../features/authentication/presentation/pages/splash_page.dart';
+import '../../features/market/presentation/pages/coin_detail_page.dart';
+import '../../features/market/presentation/pages/market_page.dart';
+import '../widgets/coming_soon_page.dart';
+import 'app_shell.dart';
 import 'go_router_refresh_stream.dart';
 import 'route_paths.dart';
 
@@ -28,9 +32,44 @@ abstract final class AppRouter {
           builder: (context, state) => const LoginPage(),
         ),
         GoRoute(
-          path: RoutePaths.home,
-          name: RouteNames.market,
-          builder: (context, state) => const _HomePlaceholder(),
+          path: RoutePaths.coinDetail,
+          name: RouteNames.coinDetail,
+          builder: (context, state) => CoinDetailPage(coinId: state.pathParameters['coinId']!),
+        ),
+        StatefulShellRoute.indexedStack(
+          builder: (context, state, shell) => AppShell(navigationShell: shell),
+          branches: [
+            StatefulShellBranch(routes: [
+              GoRoute(
+                path: RoutePaths.home,
+                name: RouteNames.market,
+                builder: (context, state) => const MarketPage(),
+              ),
+            ]),
+            StatefulShellBranch(routes: [
+              GoRoute(
+                path: RoutePaths.portfolio,
+                name: RouteNames.portfolio,
+                builder: (context, state) =>
+                    const ComingSoonPage(title: 'Portfolio', icon: Icons.pie_chart_rounded),
+              ),
+            ]),
+            StatefulShellBranch(routes: [
+              GoRoute(
+                path: RoutePaths.watchlist,
+                name: RouteNames.watchlist,
+                builder: (context, state) =>
+                    const ComingSoonPage(title: 'Watchlist', icon: Icons.star_border_rounded),
+              ),
+            ]),
+            StatefulShellBranch(routes: [
+              GoRoute(
+                path: RoutePaths.settings,
+                name: RouteNames.settings,
+                builder: (context, state) => const _SettingsPlaceholder(),
+              ),
+            ]),
+          ],
         ),
       ],
     );
@@ -48,18 +87,19 @@ abstract final class AppRouter {
   }
 }
 
-/// Replaced by the real tabbed shell (market/portfolio/watchlist/settings) in Phase 3+.
-class _HomePlaceholder extends StatelessWidget {
-  const _HomePlaceholder();
+/// Replaced by the real Settings feature in Phase 5.
+class _SettingsPlaceholder extends StatelessWidget {
+  const _SettingsPlaceholder();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Cryptofolio')),
+      appBar: AppBar(title: const Text('Settings')),
       body: Center(
-        child: FilledButton(
+        child: FilledButton.icon(
           onPressed: () => context.read<AuthBloc>().add(const AuthEvent.logoutRequested()),
-          child: const Text('Log out'),
+          icon: const Icon(Icons.logout_rounded),
+          label: const Text('Log out'),
         ),
       ),
     );

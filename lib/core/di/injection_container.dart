@@ -19,6 +19,7 @@ import '../services/firebase_crash_reporting_service.dart';
 import '../storage/token_storage.dart';
 
 import '../../features/authentication/auth_injection.dart';
+import '../../features/market/market_injection.dart';
 
 /// Root service locator; each feature registers into this same container.
 final sl = GetIt.instance;
@@ -27,6 +28,7 @@ final sl = GetIt.instance;
 Future<void> configureDependencies(Flavor flavor) async {
   await _registerCore(flavor);
   registerAuthFeature(sl);
+  await registerMarketFeature(sl);
 }
 
 /// Falls back to no-op services when Firebase isn't configured yet.
