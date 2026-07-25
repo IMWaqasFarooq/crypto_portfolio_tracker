@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import 'app.dart';
 import 'core/config/flavor.dart';
 import 'core/di/injection_container.dart';
+import 'features/notifications/data/services/push_notification_service.dart';
 import 'firebase_options.dart';
 
 /// Shared entrypoint for every flavor: DI, Firebase (best-effort), uncaught-error capture.
@@ -22,6 +24,8 @@ Future<void> bootstrap(Flavor flavor) async {
 
       if (firebaseAvailable) {
         FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+        FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+        await sl<PushNotificationService>().initialize();
       }
 
       runApp(const CryptofolioApp());

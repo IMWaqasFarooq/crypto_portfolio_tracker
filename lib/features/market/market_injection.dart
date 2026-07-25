@@ -23,9 +23,9 @@ Future<void> registerMarketFeature(GetIt sl) async {
   sl.registerSingleton<Box<dynamic>>(box, instanceName: HiveBoxes.market);
 
   sl
-    ..registerLazySingleton<MarketRemoteDataSource>(() => MarketRemoteDataSourceImpl(sl()))
+    ..registerLazySingleton<MarketRemoteDataSource>(() => MarketRemoteDataSourceImpl(sl(), sl()))
     ..registerLazySingleton<MarketLocalDataSource>(
-      () => MarketLocalDataSourceImpl(sl<Box<dynamic>>(instanceName: HiveBoxes.market)),
+      () => MarketLocalDataSourceImpl(sl<Box<dynamic>>(instanceName: HiveBoxes.market), sl()),
     )
     ..registerLazySingleton<MarketStreamDataSource>(() => BinanceMarketStreamDataSource())
     ..registerLazySingleton<MarketRepository>(
@@ -48,6 +48,7 @@ Future<void> registerMarketFeature(GetIt sl) async {
         getCoinsUseCase: sl(),
         watchPriceUpdatesUseCase: sl(),
         unsubscribePriceUpdatesUseCase: sl(),
+        currencyProvider: sl(),
       ),
     )
     ..registerFactory(() => CoinSearchCubit(searchCoinsUseCase: sl()))
@@ -58,6 +59,7 @@ Future<void> registerMarketFeature(GetIt sl) async {
         getCandlesUseCase: sl(),
         watchPriceUpdatesUseCase: sl(),
         unsubscribePriceUpdatesUseCase: sl(),
+        currencyProvider: sl(),
       ),
     );
 }

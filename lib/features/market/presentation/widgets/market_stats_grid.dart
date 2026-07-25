@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/services/currency_provider.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../domain/entities/coin_detail.dart';
 
@@ -11,8 +13,9 @@ class MarketStatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currency = NumberFormat.compactCurrency(symbol: '\$');
-    final price = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
+    final symbol = sl<CurrencyProvider>().symbol;
+    final currency = NumberFormat.compactCurrency(symbol: symbol);
+    final price = NumberFormat.currency(symbol: symbol, decimalDigits: 2);
 
     final stats = <(String, String)>[
       ('Market Cap', currency.format(coin.marketCap)),

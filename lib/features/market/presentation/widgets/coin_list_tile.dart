@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/services/currency_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -17,7 +19,10 @@ class CoinListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final priceFormat = NumberFormat.currency(symbol: '\$', decimalDigits: coin.currentPrice < 1 ? 4 : 2);
+    final priceFormat = NumberFormat.currency(
+      symbol: sl<CurrencyProvider>().symbol,
+      decimalDigits: coin.currentPrice < 1 ? 4 : 2,
+    );
 
     return ListTile(
       onTap: onTap,

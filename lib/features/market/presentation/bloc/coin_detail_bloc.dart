@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/services/currency_provider.dart';
 import '../../domain/entities/price_tick.dart';
 import '../../domain/usecases/get_candles_usecase.dart';
 import '../../domain/usecases/get_coin_detail_usecase.dart';
@@ -18,11 +19,13 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
     required GetCandlesUseCase getCandlesUseCase,
     required WatchPriceUpdatesUseCase watchPriceUpdatesUseCase,
     required UnsubscribePriceUpdatesUseCase unsubscribePriceUpdatesUseCase,
+    required CurrencyProvider currencyProvider,
   })  : _getCoinDetailUseCase = getCoinDetailUseCase,
         _getPriceHistoryUseCase = getPriceHistoryUseCase,
         _getCandlesUseCase = getCandlesUseCase,
         _watchPriceUpdatesUseCase = watchPriceUpdatesUseCase,
         _unsubscribePriceUpdatesUseCase = unsubscribePriceUpdatesUseCase,
+        _currencyProvider = currencyProvider,
         _subscriberId = 'coin_detail_${_instanceCounter++}',
         super(const CoinDetailState()) {
     on<CoinDetailStarted>(_onStarted);
@@ -39,6 +42,7 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
   final GetCandlesUseCase _getCandlesUseCase;
   final WatchPriceUpdatesUseCase _watchPriceUpdatesUseCase;
   final UnsubscribePriceUpdatesUseCase _unsubscribePriceUpdatesUseCase;
+  final CurrencyProvider _currencyProvider;
   final String _subscriberId;
 
   StreamSubscription<PriceTick>? _tickSubscription;
@@ -121,6 +125,8 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
 
   void _subscribeToLivePrice(String symbol) {
     _tickSubscription?.cancel();
+    if (_currencyProvider.currencyCode != 'usd') return;
+
     _tickSubscription = _watchPriceUpdatesUseCase(
       WatchPriceUpdatesParams(subscriberId: _subscriberId, symbols: [symbol]),
     ).listen((tick) => add(CoinDetailEvent.priceTickReceived(tick)));

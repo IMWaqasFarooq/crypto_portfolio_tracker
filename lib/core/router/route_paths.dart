@@ -10,6 +10,7 @@ abstract final class RoutePaths {
   static const addHolding = '/portfolio/add';
   static const watchlist = '/watchlist';
   static const settings = '/settings';
+  static const notifications = '/notifications';
 
   static String coinDetailPath(String coinId) => '/market/coin/$coinId';
 }
@@ -23,4 +24,5 @@ abstract final class RouteNames {
   static const addHolding = 'addHolding';
   static const watchlist = 'watchlist';
   static const settings = 'settings';
+  static const notifications = 'notifications';
 }

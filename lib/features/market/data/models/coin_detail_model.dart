@@ -23,14 +23,14 @@ class CoinDetailModel {
     required this.maxSupply,
   });
 
-  factory CoinDetailModel.fromJson(Map<String, dynamic> json) {
+  factory CoinDetailModel.fromJson(Map<String, dynamic> json, {required String currencyCode}) {
     final marketData = (json['market_data'] as Map<String, dynamic>?) ?? const {};
     final description = (json['description'] as Map<String, dynamic>?) ?? const {};
     final links = (json['links'] as Map<String, dynamic>?) ?? const {};
     final homepages = (links['homepage'] as List<dynamic>?) ?? const [];
     final image = (json['image'] as Map<String, dynamic>?) ?? const {};
 
-    double usd(String key) => _asDouble(_currencyMap(marketData, key)?['usd']) ?? 0;
+    double inCurrency(String key) => _asDouble(_currencyMap(marketData, key)?[currencyCode]) ?? 0;
 
     return CoinDetailModel(
       id: json['id'] as String,
@@ -39,15 +39,15 @@ class CoinDetailModel {
       imageUrl: (image['large'] ?? image['small'] ?? image['thumb'] ?? '') as String,
       description: (description['en'] as String?) ?? '',
       homepageUrl: homepages.isNotEmpty ? homepages.first as String? : null,
-      currentPrice: usd('current_price'),
-      marketCap: usd('market_cap'),
+      currentPrice: inCurrency('current_price'),
+      marketCap: inCurrency('market_cap'),
       marketCapRank: json['market_cap_rank'] as int?,
       priceChangePercentage24h: _asDouble(marketData['price_change_percentage_24h']) ?? 0,
-      totalVolume: usd('total_volume'),
-      high24h: usd('high_24h'),
-      low24h: usd('low_24h'),
-      ath: usd('ath'),
-      atl: usd('atl'),
+      totalVolume: inCurrency('total_volume'),
+      high24h: inCurrency('high_24h'),
+      low24h: inCurrency('low_24h'),
+      ath: inCurrency('ath'),
+      atl: inCurrency('atl'),
       circulatingSupply: _asDouble(marketData['circulating_supply']),
       totalSupply: _asDouble(marketData['total_supply']),
       maxSupply: _asDouble(marketData['max_supply']),

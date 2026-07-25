@@ -2,6 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/di/injection_container.dart';
+import '../../../../core/services/currency_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/price_point.dart';
 
@@ -37,7 +39,8 @@ class PriceChart extends StatelessWidget {
               getTooltipItems: (spots) => spots.map((spot) {
                 final point = points[spot.x.toInt()];
                 return LineTooltipItem(
-                  NumberFormat.currency(symbol: '\$', decimalDigits: 2).format(point.price),
+                  NumberFormat.currency(symbol: sl<CurrencyProvider>().symbol, decimalDigits: 2)
+                      .format(point.price),
                   TextStyle(color: Theme.of(context).colorScheme.onInverseSurface, fontWeight: FontWeight.w600),
                 );
               }).toList(),

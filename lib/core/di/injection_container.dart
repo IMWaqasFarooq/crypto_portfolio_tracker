@@ -14,13 +14,17 @@ import '../network/interceptors/auth_interceptor.dart';
 import '../network/network_info.dart';
 import '../services/analytics_service.dart';
 import '../services/crash_reporting_service.dart';
+import '../services/currency_provider.dart';
 import '../services/firebase_analytics_service.dart';
 import '../services/firebase_crash_reporting_service.dart';
+import '../storage/hive_boxes.dart';
 import '../storage/token_storage.dart';
 
 import '../../features/authentication/auth_injection.dart';
 import '../../features/market/market_injection.dart';
+import '../../features/notifications/notifications_injection.dart';
 import '../../features/portfolio/portfolio_injection.dart';
+import '../../features/settings/settings_injection.dart';
 import '../../features/watchlist/watchlist_injection.dart';
 
 /// Root service locator; each feature registers into this same container.
@@ -33,6 +37,8 @@ Future<void> configureDependencies(Flavor flavor) async {
   await registerMarketFeature(sl);
   await registerWatchlistFeature(sl);
   await registerPortfolioFeature(sl);
+  await registerSettingsFeature(sl);
+  await registerNotificationsFeature(sl);
 }
 
 /// Falls back to no-op services when Firebase isn't configured yet.
@@ -57,8 +63,13 @@ Future<void> _registerCore(Flavor flavor) async {
   sl.registerSingleton<Flavor>(flavor);
 
   await Hive.initFlutter();
+  final settingsBox = await Hive.openBox<dynamic>(HiveBoxes.settings);
+  sl.registerSingleton<Box<dynamic>>(settingsBox, instanceName: HiveBoxes.settings);
 
   sl
+    ..registerLazySingleton<CurrencyProvider>(
+      () => CurrencyProvider(sl<Box<dynamic>>(instanceName: HiveBoxes.settings)),
+    )
     ..registerLazySingleton<Logger>(
       () => Logger(printer: PrettyPrinter(methodCount: 0, colors: !flavor.isProduction)),
     )

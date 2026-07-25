@@ -20,6 +20,7 @@ class PortfolioSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Values are Binance-tick-sourced (always USD), independent of the Settings currency.
     final currency = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
     final scheme = Theme.of(context).colorScheme;
 

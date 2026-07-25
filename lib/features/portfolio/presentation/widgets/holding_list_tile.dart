@@ -24,6 +24,7 @@ class HoldingListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Binance-tick-sourced (always USD), independent of the Settings currency.
     final currency = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
     final quantityFormat = NumberFormat.decimalPattern()..maximumFractionDigits = 6;
 

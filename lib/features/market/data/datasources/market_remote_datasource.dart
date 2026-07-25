@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/services/currency_provider.dart';
 import '../models/candle_model.dart';
 import '../models/coin_detail_model.dart';
 import '../models/coin_model.dart';
@@ -16,14 +17,15 @@ abstract class MarketRemoteDataSource {
 }
 
 class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
-  MarketRemoteDataSourceImpl(this._dio);
+  MarketRemoteDataSourceImpl(this._dio, this._currencyProvider);
 
   final Dio _dio;
+  final CurrencyProvider _currencyProvider;
 
   @override
   Future<List<CoinModel>> getCoins({required int page, required int perPage}) async {
     final response = await _get('/coins/markets', queryParameters: {
-      'vs_currency': 'usd',
+      'vs_currency': _currencyProvider.currencyCode,
       'order': 'market_cap_desc',
       'page': page,
       'per_page': perPage,
@@ -50,13 +52,16 @@ class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
       'developer_data': false,
       'sparkline': false,
     });
-    return CoinDetailModel.fromJson(response.data as Map<String, dynamic>);
+    return CoinDetailModel.fromJson(
+      response.data as Map<String, dynamic>,
+      currencyCode: _currencyProvider.currencyCode,
+    );
   }
 
   @override
   Future<List<PricePointModel>> getPriceHistory(String coinId, {required int days}) async {
     final response = await _get('/coins/$coinId/market_chart', queryParameters: {
-      'vs_currency': 'usd',
+      'vs_currency': _currencyProvider.currencyCode,
       'days': days,
     });
     final prices = (response.data as Map<String, dynamic>)['prices'] as List<dynamic>;
@@ -66,7 +71,7 @@ class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
   @override
   Future<List<CandleModel>> getCandles(String coinId, {required int days}) async {
     final response = await _get('/coins/$coinId/ohlc', queryParameters: {
-      'vs_currency': 'usd',
+      'vs_currency': _currencyProvider.currencyCode,
       'days': days,
     });
     final tuples = response.data as List<dynamic>;

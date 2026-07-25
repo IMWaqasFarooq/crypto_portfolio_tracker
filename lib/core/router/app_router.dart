@@ -1,16 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/authentication/presentation/bloc/auth_bloc.dart';
-import '../../features/authentication/presentation/bloc/auth_event.dart';
 import '../../features/authentication/presentation/bloc/auth_state.dart';
 import '../../features/authentication/presentation/pages/login_page.dart';
 import '../../features/authentication/presentation/pages/splash_page.dart';
 import '../../features/market/presentation/pages/coin_detail_page.dart';
 import '../../features/market/presentation/pages/market_page.dart';
 import '../../features/portfolio/presentation/pages/add_holding_page.dart';
+import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/portfolio/presentation/pages/portfolio_page.dart';
+import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/watchlist/presentation/pages/watchlist_page.dart';
 import 'app_shell.dart';
 import 'go_router_refresh_stream.dart';
@@ -43,6 +42,11 @@ abstract final class AppRouter {
           name: RouteNames.addHolding,
           builder: (context, state) => const AddHoldingPage(),
         ),
+        GoRoute(
+          path: RoutePaths.notifications,
+          name: RouteNames.notifications,
+          builder: (context, state) => const NotificationsPage(),
+        ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, shell) => AppShell(navigationShell: shell),
           branches: [
@@ -71,7 +75,7 @@ abstract final class AppRouter {
               GoRoute(
                 path: RoutePaths.settings,
                 name: RouteNames.settings,
-                builder: (context, state) => const _SettingsPlaceholder(),
+                builder: (context, state) => const SettingsPage(),
               ),
             ]),
           ],
@@ -89,24 +93,5 @@ abstract final class AppRouter {
       AuthAuthenticated() => (atLogin || atSplash) ? RoutePaths.home : null,
       AuthUnauthenticated() => atLogin ? null : RoutePaths.login,
     };
-  }
-}
-
-/// Replaced by the real Settings feature in Phase 5.
-class _SettingsPlaceholder extends StatelessWidget {
-  const _SettingsPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
-      body: Center(
-        child: FilledButton.icon(
-          onPressed: () => context.read<AuthBloc>().add(const AuthEvent.logoutRequested()),
-          icon: const Icon(Icons.logout_rounded),
-          label: const Text('Log out'),
-        ),
-      ),
-    );
   }
 }

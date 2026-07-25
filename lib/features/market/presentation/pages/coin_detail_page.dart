@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/di/injection_container.dart';
+import '../../../../core/services/currency_provider.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/widgets/coin_avatar.dart';
@@ -83,7 +84,10 @@ class _CoinDetailView extends StatelessWidget {
           }
 
           final coin = state.coin!;
-          final price = NumberFormat.currency(symbol: '\$', decimalDigits: coin.currentPrice < 1 ? 4 : 2);
+          final price = NumberFormat.currency(
+            symbol: sl<CurrencyProvider>().symbol,
+            decimalDigits: coin.currentPrice < 1 ? 4 : 2,
+          );
 
           return RefreshIndicator(
             onRefresh: () async {

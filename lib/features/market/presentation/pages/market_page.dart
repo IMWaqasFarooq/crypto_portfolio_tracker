@@ -7,6 +7,8 @@ import '../../../../core/router/route_paths.dart';
 import '../../../../core/widgets/empty_state_view.dart';
 import '../../../../core/widgets/error_state_view.dart';
 import '../../../../core/widgets/skeleton_loader.dart';
+import '../../../notifications/presentation/cubit/notifications_cubit.dart';
+import '../../../notifications/presentation/cubit/notifications_state.dart';
 import '../bloc/coin_search_cubit.dart';
 import '../bloc/market_bloc.dart';
 import '../bloc/market_event.dart';
@@ -71,6 +73,18 @@ class _MarketViewState extends State<_MarketView> {
       appBar: AppBar(
         title: const Text('Market'),
         actions: [
+          BlocBuilder<NotificationsCubit, NotificationsState>(
+            builder: (context, state) {
+              return IconButton(
+                icon: Badge(
+                  isLabelVisible: state.unreadCount > 0,
+                  label: Text('${state.unreadCount}'),
+                  child: const Icon(Icons.notifications_outlined),
+                ),
+                onPressed: () => context.push(RoutePaths.notifications),
+              );
+            },
+          ),
           IconButton(icon: const Icon(Icons.search_rounded), onPressed: _openSearch),
         ],
       ),

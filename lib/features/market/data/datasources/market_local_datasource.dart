@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/services/currency_provider.dart';
 import '../models/candle_model.dart';
 import '../models/coin_model.dart';
 import '../models/price_point_model.dart';
@@ -14,20 +15,24 @@ abstract class MarketLocalDataSource {
   Future<List<CandleModel>?> getCachedCandles(String coinId, int days);
 }
 
-/// Caches raw JSON in the market box rather than typed Hive adapters.
+/// Caches raw JSON in the market box rather than typed Hive adapters. Keys
+/// include the current currency so switching currency can't serve stale cache.
 class MarketLocalDataSourceImpl implements MarketLocalDataSource {
-  MarketLocalDataSourceImpl(this._box);
+  MarketLocalDataSourceImpl(this._box, this._currencyProvider);
 
   final Box<dynamic> _box;
+  final CurrencyProvider _currencyProvider;
+
+  String get _currency => _currencyProvider.currencyCode;
 
   @override
   Future<void> cacheCoins(int page, List<CoinModel> coins) async {
-    await _write('coins_page_$page', coins.map((c) => c.toJson()).toList());
+    await _write('coins_page_${page}_$_currency', coins.map((c) => c.toJson()).toList());
   }
 
   @override
   Future<List<CoinModel>?> getCachedCoins(int page) async {
-    final raw = _read('coins_page_$page');
+    final raw = _read('coins_page_${page}_$_currency');
     if (raw == null) return null;
     return raw
         .cast<Map<dynamic, dynamic>>()
@@ -37,12 +42,12 @@ class MarketLocalDataSourceImpl implements MarketLocalDataSource {
 
   @override
   Future<void> cachePriceHistory(String coinId, int days, List<PricePointModel> points) async {
-    await _write('price_history_${coinId}_$days', points.map((p) => p.toJson()).toList());
+    await _write('price_history_${coinId}_${days}_$_currency', points.map((p) => p.toJson()).toList());
   }
 
   @override
   Future<List<PricePointModel>?> getCachedPriceHistory(String coinId, int days) async {
-    final raw = _read('price_history_${coinId}_$days');
+    final raw = _read('price_history_${coinId}_${days}_$_currency');
     if (raw == null) return null;
     return raw
         .cast<Map<dynamic, dynamic>>()
@@ -52,12 +57,12 @@ class MarketLocalDataSourceImpl implements MarketLocalDataSource {
 
   @override
   Future<void> cacheCandles(String coinId, int days, List<CandleModel> candles) async {
-    await _write('candles_${coinId}_$days', candles.map((c) => c.toJson()).toList());
+    await _write('candles_${coinId}_${days}_$_currency', candles.map((c) => c.toJson()).toList());
   }
 
   @override
   Future<List<CandleModel>?> getCachedCandles(String coinId, int days) async {
-    final raw = _read('candles_${coinId}_$days');
+    final raw = _read('candles_${coinId}_${days}_$_currency');
     if (raw == null) return null;
     return raw
         .cast<Map<dynamic, dynamic>>()
