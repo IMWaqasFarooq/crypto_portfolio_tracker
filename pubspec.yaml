@@ -62,6 +62,7 @@ dependencies:
   flutter_dotenv: ^6.0.1
   web_socket_channel: ^3.0.3
   candlesticks: ^3.0.1
+  flutter_native_splash: ^2.4.6
 
 dev_dependencies:
   flutter_test:
@@ -90,6 +91,16 @@ flutter_launcher_icons:
   adaptive_icon_background: "#5B5FEF"
   adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"
   remove_alpha_ios: true
+
+flutter_native_splash:
+  color: "#5B5FEF"
+  image: assets/icons/app_icon_foreground.png
+  android_12:
+    color: "#5B5FEF"
+    image: assets/icons/app_icon_foreground.png
+  android: true
+  ios: true
+  web: false
 
 flutter:
 

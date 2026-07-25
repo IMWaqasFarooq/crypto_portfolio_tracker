@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 import 'app.dart';
 import 'core/config/flavor.dart';
@@ -15,7 +16,10 @@ import 'firebase_options.dart';
 Future<void> bootstrap(Flavor flavor) async {
   await runZonedGuarded(
     () async {
-      WidgetsFlutterBinding.ensureInitialized();
+      final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+      // Keeps the native launch screen up past engine attach, through the
+      // async DI/Firebase/push setup below, instead of a blank Flutter frame.
+      FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
       await configureDependencies(flavor);
 
@@ -28,6 +32,7 @@ Future<void> bootstrap(Flavor flavor) async {
         await _tryInitializePushNotifications();
       }
 
+      FlutterNativeSplash.remove();
       runApp(const CryptofolioApp());
     },
     (error, stackTrace) {
