@@ -1,7 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:crypto_portfolio_tracker/core/error/failures.dart';
 import 'package:crypto_portfolio_tracker/features/market/domain/entities/price_point.dart';
-import 'package:crypto_portfolio_tracker/features/portfolio/domain/entities/holding.dart';
 import 'package:crypto_portfolio_tracker/features/portfolio/domain/usecases/get_portfolio_history_usecase.dart';
 import 'package:crypto_portfolio_tracker/features/portfolio/presentation/cubit/portfolio_history_cubit.dart';
 import 'package:crypto_portfolio_tracker/features/portfolio/presentation/cubit/portfolio_history_state.dart';

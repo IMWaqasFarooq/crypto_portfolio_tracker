@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:crypto_portfolio_tracker/features/market/domain/entities/price_tick.dart';
 import 'package:crypto_portfolio_tracker/features/market/domain/usecases/unsubscribe_price_updates_usecase.dart';
 import 'package:crypto_portfolio_tracker/features/market/domain/usecases/watch_price_updates_usecase.dart';
 import 'package:crypto_portfolio_tracker/features/watchlist/domain/entities/watchlist_item.dart';
