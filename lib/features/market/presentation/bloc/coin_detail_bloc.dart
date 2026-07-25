@@ -78,6 +78,9 @@ class CoinDetailBloc extends Bloc<CoinDetailEvent, CoinDetailState> {
   void _onPriceTickReceived(CoinDetailPriceTickReceived event, Emitter<CoinDetailState> emit) {
     final coin = state.coin;
     if (coin == null) return;
+    // priceTicks is the shared union of every active subscriber's symbols (e.g.
+    // Market's own live list), so ticks for other coins must be ignored here.
+    if (event.tick.symbol != coin.symbol.toLowerCase()) return;
     emit(state.copyWith(coin: coin.withLiveTick(event.tick), isLive: true));
   }
 

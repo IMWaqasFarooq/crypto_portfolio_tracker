@@ -187,6 +187,16 @@ void main() {
   );
 
   blocTest<CoinDetailBloc, CoinDetailState>(
+    'ignores a live tick for a different coin (shared tick stream leaking another subscriber\'s symbol)',
+    build: buildBloc,
+    seed: () => const CoinDetailState(detailStatus: DetailStatus.success, coin: _detail),
+    act: (bloc) => bloc.add(
+      const CoinDetailEvent.priceTickReceived(PriceTick(symbol: 'bnb', price: 565.11, changePercent24h: -0.65)),
+    ),
+    expect: () => <CoinDetailState>[],
+  );
+
+  blocTest<CoinDetailBloc, CoinDetailState>(
     'does not subscribe to live ticks when the display currency is not USD',
     build: () {
       when(() => currencyProvider.currencyCode).thenReturn('eur');
