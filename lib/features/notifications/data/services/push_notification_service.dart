@@ -53,8 +53,14 @@ class PushNotificationService {
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) await _handleForegroundMessage(initialMessage);
 
-    final token = await FirebaseMessaging.instance.getToken();
-    _logger.i('FCM token: $token');
+    // getToken() throws until an APNS token is assigned - never happens on the
+    // iOS simulator, and can lag briefly on a real device - must not block boot.
+    try {
+      final token = await FirebaseMessaging.instance.getToken();
+      _logger.i('FCM token: $token');
+    } catch (e) {
+      _logger.w('Could not fetch FCM token (expected on iOS simulator): $e');
+    }
   }
 
   Future<void> _handleForegroundMessage(RemoteMessage message) async {

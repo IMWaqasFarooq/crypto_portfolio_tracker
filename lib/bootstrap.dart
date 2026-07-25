@@ -25,7 +25,7 @@ Future<void> bootstrap(Flavor flavor) async {
       if (firebaseAvailable) {
         FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
         FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-        await sl<PushNotificationService>().initialize();
+        await _tryInitializePushNotifications();
       }
 
       runApp(const CryptofolioApp());
@@ -47,5 +47,15 @@ Future<bool> _tryInitializeFirebase() async {
   } catch (e) {
     debugPrint('Firebase.initializeApp() failed, using no-op services: $e');
     return false;
+  }
+}
+
+/// Push setup must never block app boot - permissions, APNS tokens, and local
+/// notification plugins are all environment-dependent (e.g. simulators).
+Future<void> _tryInitializePushNotifications() async {
+  try {
+    await sl<PushNotificationService>().initialize();
+  } catch (e) {
+    debugPrint('PushNotificationService.initialize() failed, continuing without it: $e');
   }
 }
