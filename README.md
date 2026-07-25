@@ -8,6 +8,16 @@ Live market data comes from the [CoinGecko](https://www.coingecko.com/en/api) RE
 price ticks stream over a public [Binance](https://binance-docs.github.io/apidocs/spot/en/#websocket-market-streams)
 WebSocket.
 
+## Screenshots
+
+| Market | Coin detail (line) | Coin detail (candles) |
+|---|---|---|
+| ![Market](docs/screenshots/market.png) | ![Coin detail, line chart](docs/screenshots/coin_detail_line.png) | ![Coin detail, candlestick chart](docs/screenshots/coin_detail_candles.png) |
+
+| Portfolio | Watchlist | Settings |
+|---|---|---|
+| ![Portfolio](docs/screenshots/portfolio.png) | ![Watchlist](docs/screenshots/watchlist.png) | ![Settings](docs/screenshots/settings.png) |
+
 ## Features
 
 - **Authentication** — email/password sign-in against a mock backend, session persisted in the
