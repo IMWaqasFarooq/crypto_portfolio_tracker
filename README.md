@@ -18,6 +18,17 @@ WebSocket.
 |---|---|---|
 | ![Portfolio](docs/screenshots/portfolio.png) | ![Watchlist](docs/screenshots/watchlist.png) | ![Settings](docs/screenshots/settings.png) |
 
+| Market (dark) |
+|---|
+| ![Market, dark theme](docs/screenshots/market_dark.png) |
+
+### Supported platforms
+
+iOS and Android only, by design — the app leans on platform Keychain/Keystore
+session storage, native push notifications, and a bottom-nav mobile layout that
+wouldn't translate to web/desktop without real rework. (`flutter create` scaffolds
+web/desktop targets by default; they're intentionally untouched here.)
+
 ## Features
 
 - **Authentication** — email/password sign-in against a mock backend, session persisted in the
@@ -86,18 +97,20 @@ feature exposes a `registerXFeature(GetIt sl)` function called once from
 
 ## Tech stack
 
-| Concern | Choice | Why |
+Each pick is argued against the obvious alternative, not just described:
+
+| Concern | Choice | Why, over the alternative |
 |---|---|---|
-| State management | `flutter_bloc` (Bloc + Cubit) | Explicit, testable state transitions; Bloc for multi-event flows (Market, Auth), Cubit for simpler single-purpose state (Portfolio, Settings) |
-| Immutable models | `freezed` | Sealed unions for events/state/failures, generated `copyWith`/equality |
-| DI | `get_it` | Minimal, no code generation required, fast to reason about |
-| Networking | `dio` | Interceptor pipeline (auth, retry with backoff, error normalization, dev logging) |
-| Local persistence | `hive` | Lightweight, fast, no native SQL dependency, works well for cache + settings + notification history |
-| Functional error handling | `dartz` (`Either`) | Forces every call site to handle failure explicitly, no silent exceptions crossing layers |
-| Routing | `go_router` | Declarative, deep-link-ready, `StatefulShellRoute` gives the bottom-nav tabs independent navigation stacks |
-| Charts | `fl_chart` (line) + `candlesticks` (OHLC) | `fl_chart` has no native candlestick series |
-| Realtime | raw `web_socket_channel` to Binance | CoinGecko has no free streaming tier; Binance's public ticker stream is free and keyless |
-| Observability | Firebase Crashlytics + Analytics + Messaging | Crash reporting, usage analytics, and push notifications behind swappable interfaces so tests/dev builds can no-op them |
+| State management | `flutter_bloc` (Bloc + Cubit) | Over plain `provider`/`ChangeNotifier`: explicit, unit-testable event→state transitions (`bloc_test`) rather than imperative `notifyListeners()` calls scattered through methods. Bloc for multi-event flows (Market, Auth), the lighter Cubit for single-purpose state (Portfolio, Settings) — not everything needs the full event ceremony. |
+| Immutable models | `freezed` | Over hand-written classes: sealed unions for events/state/failures with generated `copyWith`/equality/pattern-matching (`switch` exhaustiveness on `Failure`), which is exactly the boilerplate that rots fastest by hand as fields get added. |
+| DI | `get_it` | Over `injectable`/Riverpod-as-DI: a plain service locator needs no code generation for wiring itself (only the data models use codegen, via freezed), so `injection_container.dart` stays fully readable without a build step. |
+| Networking | `dio` | Over the plain `http` package: this app needs a real interceptor pipeline (auth header injection, retry-with-backoff, error normalization to `Failure`, dev-only request logging) across many endpoints — `dio`'s interceptor API is built for exactly that; `http` would mean hand-rolling it. |
+| Local persistence | `hive` | Over `sqflite`/`drift`: everything cached here (coin lists, holdings, watchlist, settings, notification history) is document-shaped key-value data, not relational — a full SQL layer would solve a problem this app doesn't have. |
+| Functional error handling | `dartz` (`Either`) | Over throwing exceptions across layers: forces every call site to explicitly `fold` a `Failure` or a value, so a forgotten `try/catch` can't let a raw exception reach the UI. |
+| Routing | `go_router` | Over `Navigator` 1.0/imperative routing: declarative, deep-link-ready, and `StatefulShellRoute.indexedStack` gives the four bottom-nav tabs independent navigation stacks (each tab keeps its own back-stack) for free. |
+| Charts | `fl_chart` (line) + `candlesticks` (OHLC) | `fl_chart` covers the line/portfolio-history charts well but has no candlestick series, hence the second, narrowly-scoped package just for OHLC rather than hand-rolling candles on a `CustomPainter`. |
+| Realtime | raw `web_socket_channel` to Binance | CoinGecko has no free streaming tier, so REST alone can't give live ticks; Binance's public ticker stream is free, keyless, and (being USD(T)-denominated) is explicitly gated off whenever the display currency isn't USD rather than mislabeling prices. |
+| Observability | Firebase Crashlytics + Analytics + Messaging | Chosen over rolling separate services for each concern: one SDK, one project, and each is wrapped behind a small interface (`AnalyticsService`, `CrashReportingService`) with a no-op fallback, so tests and a Firebase-less dev setup never have to care it exists. |
 
 ## Project structure
 
@@ -165,6 +178,10 @@ flutter run -t lib/main_production.dart    # production flavor
 
 ## Testing
 
+**111 unit/widget tests** (mocktail + bloc_test) covering every feature's domain use cases,
+blocs/cubits, and a handful of core widgets, plus **4 end-to-end integration flows** (auth,
+market, portfolio + watchlist, settings + notifications) driven on a real simulator.
+
 ```bash
 flutter test                                                # unit + widget tests
 flutter test integration_test/<file>.dart -d <device-id>    # a single e2e flow
@@ -182,3 +199,8 @@ platform Keychain integration aren't meaningfully testable in a browser environm
   holdings against historical prices, not a true per-lot ledger)
 - Widget/golden-image tests for chart rendering
 - CI pipeline (analyze, test, build) on PR
+
+## License
+
+This project is open source and available for anyone to use as a learning reference
+or portfolio starting point.
