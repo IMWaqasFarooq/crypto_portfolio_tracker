@@ -91,6 +91,13 @@ WebSocket stream (owned by the Market feature) pushes live ticks that patch
 Portfolio, and Watchlist simultaneously, deduplicated behind one connection with per-screen
 subscribe/unsubscribe reference counting.
 
+On the consuming side, a naive `BlocBuilder` around each of those lists would rebuild every
+visible row on every tick, regardless of which coin it was for. Each list/card instead uses
+`BlocSelector` to subscribe to just the slice of state it renders (one coin's price, one
+holding's P&L, a single boolean), so a tick for one coin only rebuilds that coin's row; the
+outer list shell is restricted via `buildWhen` to genuine structural changes (pagination,
+holdings added/removed) rather than every price update.
+
 **Dependency injection** is a plain `GetIt` service locator, wired feature-by-feature — each
 feature exposes a `registerXFeature(GetIt sl)` function called once from
 `core/di/injection_container.dart` at startup.
@@ -101,7 +108,7 @@ Each pick names the alternative it was weighed against, as a trade-off rather th
 
 | Concern | Choice | Why, over the alternative |
 |---|---|---|
-| State management | `flutter_bloc` (Bloc + Cubit) | Vs. Riverpod: both are solid choices, and Riverpod's compile-safe providers and lower boilerplate for simple cases are genuinely appealing. Bloc's edge here is the explicit Event→State stream, which pairs well with `bloc_test`'s "given this event, expect exactly this state sequence" style for testing async flows like pagination and retry-on-failure. It also integrates cleanly with `go_router`'s stream-based refresh for auth-driven route guards (via a small `Listenable` adapter). Bloc for multi-event flows (Market, Auth), the lighter Cubit for single-purpose state (Portfolio, Settings). |
+| State management | `flutter_bloc` (Bloc + Cubit) | Vs. Riverpod: both are solid choices, and Riverpod's compile-safe providers and lower boilerplate for simple cases are genuinely appealing. Bloc's edge here is the explicit Event→State stream, which pairs well with `bloc_test`'s "given this event, expect exactly this state sequence" style for testing async flows like pagination and retry-on-failure. It also integrates cleanly with `go_router`'s stream-based refresh for auth-driven route guards (via a small `Listenable` adapter), and `BlocSelector` gives the single-stream-of-state model a clean way to scale to a list rebuilding under a high-frequency tick stream without over-rendering. Bloc for multi-event flows (Market, Auth), the lighter Cubit for single-purpose state (Portfolio, Settings). |
 | Immutable models | `freezed` | Vs. hand-written classes: generates `copyWith`/equality/pattern-matching for the event/state/failure unions, which is the boilerplate that rots fastest by hand as fields get added. (Exhaustiveness checking on `switch` itself comes from Dart's sealed classes — Freezed's job is generating the union variants cleanly.) |
 | DI | `get_it` | Vs. annotation-based DI (`injectable`, Riverpod-as-DI): a plain service locator needs no code generation for wiring itself, so `injection_container.dart` stays fully readable without a build step — a reasonable trade against the compile-time safety those alternatives offer. |
 | Networking | `dio` | Vs. the plain `http` package: this app needs a real interceptor pipeline (auth header injection, retry-with-backoff, error normalization to `Failure`, dev-only request logging) across many endpoints — `dio` has that built in; `http` would mean hand-rolling it. |
