@@ -46,12 +46,13 @@ class _CoinDetailView extends StatelessWidget {
         title: const Text('Coin details'),
         actions: [
           BlocBuilder<CoinDetailBloc, CoinDetailState>(
+            buildWhen: (previous, current) => previous.coin?.id != current.coin?.id,
             builder: (context, detailState) {
               final coin = detailState.coin;
               if (coin == null) return const SizedBox.shrink();
-              return BlocBuilder<WatchlistCubit, WatchlistState>(
-                builder: (context, watchlistState) {
-                  final isWatched = watchlistState.isWatched(coin.id);
+              return BlocSelector<WatchlistCubit, WatchlistState, bool>(
+                selector: (state) => state.isWatched(coin.id),
+                builder: (context, isWatched) {
                   return IconButton(
                     icon: Icon(isWatched ? Icons.star_rounded : Icons.star_border_rounded),
                     tooltip: isWatched ? 'Remove from watchlist' : 'Add to watchlist',

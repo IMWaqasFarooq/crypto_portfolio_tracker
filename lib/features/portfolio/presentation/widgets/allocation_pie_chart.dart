@@ -20,11 +20,11 @@ class AllocationPieChart extends StatelessWidget {
   const AllocationPieChart({
     super.key,
     required this.holdings,
-    required this.allocationPercentFor,
+    required this.percentages,
   });
 
   final List<Holding> holdings;
-  final double Function(Holding) allocationPercentFor;
+  final List<double> percentages;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class AllocationPieChart extends StatelessWidget {
               sections: [
                 for (var i = 0; i < holdings.length; i++)
                   PieChartSectionData(
-                    value: allocationPercentFor(holdings[i]),
+                    value: percentages[i],
                     color: _sliceColors[i % _sliceColors.length],
                     showTitle: false,
                     radius: 36,
@@ -78,7 +78,7 @@ class AllocationPieChart extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '${allocationPercentFor(holdings[i]).toStringAsFixed(1)}%',
+                        '${percentages[i].toStringAsFixed(1)}%',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],

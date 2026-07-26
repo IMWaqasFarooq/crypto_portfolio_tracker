@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/route_paths.dart';
 import '../../../../core/widgets/empty_state_view.dart';
+import '../../../market/domain/entities/price_tick.dart';
 import '../cubit/watchlist_cubit.dart';
 import '../cubit/watchlist_state.dart';
 import '../widgets/watchlist_list_tile.dart';
@@ -16,6 +17,8 @@ class WatchlistPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Watchlist')),
       body: BlocBuilder<WatchlistCubit, WatchlistState>(
+        buildWhen: (previous, current) =>
+            previous.status != current.status || previous.items != current.items,
         builder: (context, state) {
           if (state.status == WatchlistStatus.loading) {
             return const Center(child: CircularProgressIndicator());
@@ -31,11 +34,16 @@ class WatchlistPage extends StatelessWidget {
             itemCount: state.items.length,
             itemBuilder: (context, index) {
               final item = state.items[index];
-              return WatchlistListTile(
-                item: item,
-                liveTick: state.liveTicks[item.symbol.toLowerCase()],
-                onTap: () => context.push(RoutePaths.coinDetailPath(item.coinId)),
-                onRemove: () => context.read<WatchlistCubit>().toggle(item),
+              return BlocSelector<WatchlistCubit, WatchlistState, PriceTick?>(
+                selector: (state) => state.liveTicks[item.symbol.toLowerCase()],
+                builder: (context, liveTick) {
+                  return WatchlistListTile(
+                    item: item,
+                    liveTick: liveTick,
+                    onTap: () => context.push(RoutePaths.coinDetailPath(item.coinId)),
+                    onRemove: () => context.read<WatchlistCubit>().toggle(item),
+                  );
+                },
               );
             },
           );

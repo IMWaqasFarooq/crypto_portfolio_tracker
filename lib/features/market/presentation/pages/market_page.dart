@@ -9,6 +9,7 @@ import '../../../../core/widgets/error_state_view.dart';
 import '../../../../core/widgets/skeleton_loader.dart';
 import '../../../notifications/presentation/cubit/notifications_cubit.dart';
 import '../../../notifications/presentation/cubit/notifications_state.dart';
+import '../../domain/entities/coin.dart';
 import '../bloc/coin_search_cubit.dart';
 import '../bloc/market_bloc.dart';
 import '../bloc/market_event.dart';
@@ -73,12 +74,13 @@ class _MarketViewState extends State<_MarketView> {
       appBar: AppBar(
         title: const Text('Market'),
         actions: [
-          BlocBuilder<NotificationsCubit, NotificationsState>(
-            builder: (context, state) {
+          BlocSelector<NotificationsCubit, NotificationsState, int>(
+            selector: (state) => state.unreadCount,
+            builder: (context, unreadCount) {
               return IconButton(
                 icon: Badge(
-                  isLabelVisible: state.unreadCount > 0,
-                  label: Text('${state.unreadCount}'),
+                  isLabelVisible: unreadCount > 0,
+                  label: Text('$unreadCount'),
                   child: const Icon(Icons.notifications_outlined),
                 ),
                 onPressed: () => context.push(RoutePaths.notifications),
@@ -89,6 +91,12 @@ class _MarketViewState extends State<_MarketView> {
         ],
       ),
       body: BlocBuilder<MarketBloc, MarketState>(
+        buildWhen: (previous, current) =>
+            previous.status != current.status ||
+            previous.hasMore != current.hasMore ||
+            previous.isLoadingMore != current.isLoadingMore ||
+            previous.failure != current.failure ||
+            previous.coins.length != current.coins.length,
         builder: (context, state) {
           if (state.status == MarketStatus.initial || state.status == MarketStatus.loading) {
             return const SkeletonList();
@@ -122,11 +130,18 @@ class _MarketViewState extends State<_MarketView> {
                     child: Center(child: CircularProgressIndicator()),
                   );
                 }
-                final coin = state.coins[index];
-                return CoinListTile(
-                  coin: coin,
-                  isLive: state.liveSymbols.contains(coin.symbol.toLowerCase()),
-                  onTap: () => context.push(RoutePaths.coinDetailPath(coin.id)),
+                return BlocSelector<MarketBloc, MarketState, ({Coin coin, bool isLive})>(
+                  selector: (state) => (
+                    coin: state.coins[index],
+                    isLive: state.liveSymbols.contains(state.coins[index].symbol.toLowerCase()),
+                  ),
+                  builder: (context, tile) {
+                    return CoinListTile(
+                      coin: tile.coin,
+                      isLive: tile.isLive,
+                      onTap: () => context.push(RoutePaths.coinDetailPath(tile.coin.id)),
+                    );
+                  },
                 );
               },
             ),

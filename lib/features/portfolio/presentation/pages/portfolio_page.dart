@@ -54,6 +54,8 @@ class _PortfolioView extends StatelessWidget {
           }
         },
         child: BlocBuilder<PortfolioCubit, PortfolioState>(
+          buildWhen: (previous, current) =>
+              previous.status != current.status || previous.holdings != current.holdings,
           builder: (context, state) {
             if (state.status == PortfolioStatus.loading) {
               return const Center(child: CircularProgressIndicator());
@@ -74,17 +76,28 @@ class _PortfolioView extends StatelessWidget {
             return ListView(
               padding: const EdgeInsets.all(AppSpacing.md),
               children: [
-                PortfolioSummaryCard(
-                  totalValue: state.totalValue,
-                  totalProfitLoss: state.totalProfitLoss,
-                  totalProfitLossPercent: state.totalProfitLossPercent,
+                BlocSelector<PortfolioCubit, PortfolioState, ({double value, double pl, double plPercent})>(
+                  selector: (state) => (
+                    value: state.totalValue,
+                    pl: state.totalProfitLoss,
+                    plPercent: state.totalProfitLossPercent,
+                  ),
+                  builder: (context, totals) => PortfolioSummaryCard(
+                    totalValue: totals.value,
+                    totalProfitLoss: totals.pl,
+                    totalProfitLossPercent: totals.plPercent,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Text('Allocation', style: AppTextStyles.sectionTitle(context)),
                 const SizedBox(height: AppSpacing.sm),
-                AllocationPieChart(
-                  holdings: state.holdings,
-                  allocationPercentFor: state.allocationPercentFor,
+                BlocSelector<PortfolioCubit, PortfolioState, List<double>>(
+                  selector: (state) =>
+                      [for (final holding in state.holdings) state.allocationPercentFor(holding)],
+                  builder: (context, percentages) => AllocationPieChart(
+                    holdings: state.holdings,
+                    percentages: percentages,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
                 Text('History', style: AppTextStyles.sectionTitle(context)),
@@ -119,12 +132,18 @@ class _PortfolioView extends StatelessWidget {
                 Text('Holdings', style: AppTextStyles.sectionTitle(context)),
                 const SizedBox(height: AppSpacing.sm),
                 for (final holding in state.holdings)
-                  HoldingListTile(
-                    holding: holding,
-                    currentValue: state.valueFor(holding),
-                    profitLossPercent: state.profitLossPercentFor(holding),
-                    onTap: () => context.push(RoutePaths.coinDetailPath(holding.coinId)),
-                    onDelete: () => context.read<PortfolioCubit>().removeHolding(holding.id),
+                  BlocSelector<PortfolioCubit, PortfolioState, ({double value, double pl})>(
+                    selector: (state) => (
+                      value: state.valueFor(holding),
+                      pl: state.profitLossPercentFor(holding),
+                    ),
+                    builder: (context, row) => HoldingListTile(
+                      holding: holding,
+                      currentValue: row.value,
+                      profitLossPercent: row.pl,
+                      onTap: () => context.push(RoutePaths.coinDetailPath(holding.coinId)),
+                      onDelete: () => context.read<PortfolioCubit>().removeHolding(holding.id),
+                    ),
                   ),
               ],
             );
